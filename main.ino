@@ -115,4 +115,5 @@ void loop() {
         case OBSTACLE_STATE:
             dodge_obstacle();
             detect_off_signal();
+            STATE = ALARM_STATE;
 }           
