@@ -82,7 +82,7 @@ void check_obstacles() {
     //Tässä funktiossa tarkistetaan onko koneen edessä esteitä, jos on siirytään tilaan OBSTACLE_STATE.
     long value = getDistance();
     if (alaraja <= value && value <= ylaraja) {
-        STATE = OBSTACLE_STATE;
+        MACHINE_STATE = OBSTACLE_STATE;
     }
 }
 
@@ -105,7 +105,7 @@ void setup() {
 }
 
 void loop() {
-    switch STATE:
+    switch MACHINE_STATE:
         case IDLE_STATE:
             check_time();
         case ALARM_STATE:
@@ -115,5 +115,5 @@ void loop() {
         case OBSTACLE_STATE:
             dodge_obstacle();
             detect_off_signal();
-            STATE = ALARM_STATE;
+            MACHINE_STATE = ALARM_STATE;
 }           
