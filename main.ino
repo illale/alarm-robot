@@ -19,9 +19,6 @@ OBSTACLE_STATE -> IDLE_STATE, kun konetta heilutetaan, ja hälytyts lopetetaan.
 enum STATE MACHINE_STATE;
 MACHINE_STATE = IDLE_STATE;
 
-//Lippu, jonka avulla tarkistetaan onko moottori käynnistetty
-bool IS_DRIVING = false;
-
 //Pinnit, joita ultraäänisensori käyttää
 const int echoPin = 13;
 const int trigPin = 12;
@@ -30,18 +27,26 @@ const int tiltPin = 11;
 const int ledPin = 10;
 const int audPin = 3;
 
-void get_settings() {
+//Lippu, jonka avulla tarkistetaan onko moottori käynnistetty
+bool IS_DRIVING = false;
+bool CONTINUOS = false;
+//Oletusarvo ajalle, jonka kuluttua hälytetään millisekuntteina
+long wanted_time_interval = 200000;
+long time;
+long current_time;
 
+
+void get_settings() {
 }
 
 void check_time() {
     //Tässä funktiossa tarkistetaan aika, ja jos aika == haluttu aika, niin vaihdetaan tilaan ALARM_STATE
-    if (time == wanted_time) {
+    current_time = millis();
+    if (time - current_time <= 0 && time != 0) {
         MACHINE_STATE = ALARM_STATE;
-    } else {
-
+        //Tarkistetaan onko haluttu hälytys ns jatkuva vai pelkästään yhden kerran hälyttävä
+        CONTINUOS ? time = 0 : time += wanted_time_interval;
     }
-
 }
 
 void move_machine() {
@@ -51,15 +56,10 @@ void move_machine() {
     }
 }
 
-long check_distance() {
-    //Laske etaisyys eteenpäin.
-    return distance;
-}
-
 long getDistance() {
-    //Laskee etaisyyden eteen
+    //Lasketaan etäisyys
     long duration, distance;
-
+   
     digitalWrite(trigPin, LOW);
     delayMicroseconds(2);
 
@@ -73,17 +73,24 @@ long getDistance() {
     duration = pulseIn(echoPin, HIGH);
 
     // Laskee etäisyyden kuluneen ajan perusteella. 
-    distance = duration*0.034/2;
+    distance = duration * 0.034 / 2;
 
     return distance;
 }
 
 void check_obstacles() {
     //Tässä funktiossa tarkistetaan onko koneen edessä esteitä, jos on siirytään tilaan OBSTACLE_STATE.
+    int upper_bound, lower_bound;
+    upper_bound = 10;
+    lower_bound = 0;
     long value = getDistance();
-    if (alaraja <= value && value <= ylaraja) {
+    if (lower_bound <= value && value <= upper_bound) {
         MACHINE_STATE = OBSTACLE_STATE;
     }
+}
+
+void init_servo() {
+    //Asetetaan servo alkuasentoon
 }
 
 void dodge_obstacles() {
