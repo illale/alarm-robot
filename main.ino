@@ -37,6 +37,24 @@ long current_time;
 
 
 void get_settings() {
+    if (Serial.available() > 0) {
+        int bytes[4]
+        int byte;
+        int i = 0;
+        int j = 0;
+        long end_values[];
+        while((byte = Serial.read()) != -1) {
+            //Tulevat arvot ovat 32 bittisiä, joten 4 tavua on yksi arvo
+            bytes[i] = byte;
+            if (i == 3) {
+                i = 0;
+                //Olettaa että arvojen MSB on vasemmassa laidassa, eli listan ensimmäisen arvon ensimmäinen bitti on MSB
+                end_values[j] = bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3]
+            } else {
+                i++;
+            }
+        }
+    }
 }
 
 void check_time() {
