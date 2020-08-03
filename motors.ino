@@ -57,19 +57,18 @@ void setup(){
 }
 
 void dodge_obstacles(){
-	//Väistetään este kääntämällä tornia oikealle ja vasemmalle, jonka jälkeen päätetään kumpaan suuntaan käännytään.
-	//Kääntyminen tapahtuu käyttämällä vain jompaa kumpaa moottoria oikeaa tai vasenta.
+    //Väistetään este kääntämällä tornia oikealle ja vasemmalle, jonka jälkeen päätetään kumpaan suuntaan käännytään.
+    //Kääntyminen tapahtuu käyttämällä vain jompaa kumpaa moottoria oikeaa tai vasenta.
     servo.write(140);
     delay(1000);
-    //long distLeft = getDistance();
+    long distLeft = getDistance();
     servo.write(40);
     delay(1000);
     getDistance();
     long distRight = getDistance();
 
-    //Logiikkaa joutuu vielä säätämään
     if (distLeft <= distRight){
-        //Käännytään oikealle jos vasemmalla jotain lähempänä
+        //Käännytään oikealle jos vasemmalla jotain lähellä
         drive(rightPin5, rightPin6, true);
         delay(2000);
         stop();
@@ -81,7 +80,7 @@ void dodge_obstacles(){
     servo.write(pos);
 }
 
-//Demonstraatio toiminnasta TinkerCadia varten
+//Demonstraatio toiminnasta TinkerCadille
 void loop(){
     //Ajetaan eteen ja peruutetaan saman verran
     drive(leftPin8, leftPin9, true);
