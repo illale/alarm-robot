@@ -162,7 +162,7 @@ void dodge_obstacles() {
     //Kääntyminen tapahtuu käyttämällä vain jompaa kumpaa moottoria oikeaa tai vasenta.
     servo.write(140);
     delay(1000);
-    //long distLeft = getDistance();
+    long distLeft = getDistance();
     servo.write(40);
     delay(1000);
     long distRight = getDistance();
@@ -172,11 +172,14 @@ void dodge_obstacles() {
         drive(rightPin5, rightPin6, true);
         delay(2000);
         stop();
+        //MACHINE_STATE = ALARM_STATE;
         
     } else {
         //Vasemmalle jos toisin päin
         drive(leftPin8, leftPin9, true);
         delay(2000);
+        stop();
+        //MACHINE_STATE = ALARM_STATE;
     }
     servo.write(pos);
 }
