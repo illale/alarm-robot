@@ -3,9 +3,6 @@ import serial
 import sys
 import glob
 
-
-
-
 class MainWindow:
     def __init__(self):
         self.window = tk.Tk()
@@ -14,10 +11,8 @@ class MainWindow:
         self.TEXT = "Empty"
         self.PORTS = []
         self.CONTINUOS = False
-
-
         self.window.title("Alarm-Robot Programmer")
-        self.window.geometry("300x500")
+        self.window.geometry("300x350")
         self.window.resizable(0, 0)
         self.label = tk.Label(self.window, text="All available serial ports")
         self.label.pack()
@@ -27,7 +22,6 @@ class MainWindow:
         self.create_entry()
         self.create_boolean_check()
         self.time_button()
-
 
     def list_serials(self):
         self.serials = tk.Listbox(self.window)
@@ -49,11 +43,17 @@ class MainWindow:
         else:
             self.TEXT = text
         print(self.TEXT)
+        time = int(self.TEXT.split(":")[0]) * 3600000 + int(self.TEXT.split(":")[1]) * 60000
+        print(time)
+        self.SERIAL.write(time)
 
     def button_command(self):
         self.INDEX = self.serials.curselection()
         self.SERIAL = self.serials.curselection()
         print(self.INDEX)
+        print(self.SERIAL)
+        print(self.PORTS[self.SERIAL[0]])
+        self.SERIAL = serial_t = serial.Serial(self.PORTS[self.INDEX[0]])
 
     def insert_ports(self):
         if (len(self.PORTS) > 0):
@@ -62,7 +62,6 @@ class MainWindow:
         else:
             self.serials.insert(0, "Serial 1")
             self.serials.insert(1, "Serial 2")
-
 
     def create_entry(self):
         self.entry = tk.Entry(self.window, text="21:00")
@@ -87,10 +86,10 @@ class MainWindow:
 
         for port in ports:
             try:
-                serial = serial.Serial(port)
-                serial.close()
+                serial_t = serial.Serial(port)
+                serial_t.close()
                 self.PORTS.append(port)
-            except: 
+            except:
                 pass
 
     def main_loop(self):
