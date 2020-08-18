@@ -51,6 +51,10 @@ class MainWindow:
         time = int(self.TEXT.split(":")[0]) * 3600000 + int(self.TEXT.split(":")[1]) * 60000
         #Write the interval value to the arduino board
         self.SERIAL.write(time)
+        if self.CONTINUOS:
+            self.SERIAL.write(1)
+        else:
+            self.SERIAL.write(0)
 
     def button_command(self):
         #This is the method that takes care of selecting the serial port
