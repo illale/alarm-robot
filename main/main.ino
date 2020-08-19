@@ -55,6 +55,10 @@ bool CONTINUOS = false;
 long time;
 long wanted_time_interval;
 long current_time;
+//setupping values for alarm and detecting off signal
+int readValue;
+int count = 0;
+int previous;
 
 
 void get_settings() {
@@ -208,8 +212,27 @@ void dodge_obstacles() {
     servo.write(pos);
 }
 
+void alarm(int i) {
+    if (i < 6) {
+        tone(audPin, 100, 200);
+        delay(10);
+        tone(audPin, 300, 400);
+        delay(200);
+        tone(audPin, 50, 300);
+        delay(150);
+        }
+    else {
+        MACHINE_STATE = IDLE_STATE;
+    }
+}
+
 void detect_off_signal() {
-    //Tarkistetaan heilutetaanko konetta
+    alarm(count);
+    previous = readValue;
+    readValue = digitalRead(tiltPin);
+    if (readValue != previous) {
+        count++;
+    }
 }
 
 void setup() {
