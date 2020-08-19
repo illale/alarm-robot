@@ -26,6 +26,7 @@ void alarm(int i) {
 
 //counts how many times alarm-robot has been shaken
 void shake() {
+  alarm(count);
   previous = readValue;
   readValue = digitalRead(11);
   if (readValue != previous) {
@@ -35,6 +36,5 @@ void shake() {
 
 void loop()
 {
-  alarm(count);
   shake();
 }
