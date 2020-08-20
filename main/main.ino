@@ -7,6 +7,7 @@ IDLE_STATE: In this state, the arduino checks is the current running time higher
             interval
 ALARM_STATE: The robot alarms, tries to escape from the human
 OBSTACLE_STATE: The robot detects obstacle, evades it, and continues to sound the alarm
+SETTINGS_STATE: Check the settings from serial
 
 State changes:
 IDLE_STATE -> ALARM_STATE, when the running time is higher than the interval
@@ -14,6 +15,7 @@ ALARM_STATE -> OBSTACLE_STATE, when the robot notices obstacle in its way
 ALARM_STATE -> IDLE_STATE, when the robot is shaken by human, this results in the alarm stopping
 OBSTACLE_STATE -> ALARM_STATE, when the obstacle has been avoided
 OBSTACLE_STATE -> IDLE_STATE, when the robot is shaken by human, this results in the alarm stopping
+SETTINGS_STATE -> IDLE_STATE, when duration from latest reset is over 30 seconds
 */
 enum STATE { IDLE_STATE, ALARM_STATE, OBSTACLE_STATE, SETTINGS_STATE};
 
