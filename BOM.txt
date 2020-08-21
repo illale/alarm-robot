@@ -13,4 +13,4 @@ Slideswitch			1
 Ultrasonic Distance Sensor	1
 Tilt Sensor			1
 Piezo				1
-10 kΩ Resistor		 1
+10 kΩ Resistor		    1
