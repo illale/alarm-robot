@@ -229,7 +229,9 @@ void alarm(int i) {
         delay(200);
         tone(audPin, 50, 300);
         delay(150);
-        }
+    } else {
+        MACHINE_STATE = IDLE_STATE;
+    }
 }
 
 void detect_off_signal() {
