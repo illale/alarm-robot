@@ -93,7 +93,7 @@ void get_settings() {
             CONTINUOS = true;
         }
     } else {
-        time = 5000;  
+        time = 50000;  
       }
     //Store the wanted time inteval, so that time is never doubled
     wanted_time_interval = time;
@@ -184,6 +184,7 @@ void check_obstacles() {
     Serial.print("\n");
     if (lower_bound <= value && value <= upper_bound) {
         Serial.print("State change \n");
+        stop();
         MACHINE_STATE = OBSTACLE_STATE;
     } else {
         Serial.print("No change \n");
@@ -203,9 +204,15 @@ void dodge_obstacles() {
     servo.write(140);
     delay(1000);
     long distLeft = getDistance();
+    Serial.print("Left distance: ");
+    Serial.print(distLeft);
+    Serial.print("\n");
     servo.write(40);
     delay(1000);
     long distRight = getDistance();
+    Serial.print("Right distance: ");
+    Serial.print(distRight);
+    Serial.print("\n");
 
     if (distLeft <= distRight){
         //Turn to the right if obstacle at left
@@ -217,6 +224,7 @@ void dodge_obstacles() {
         //And to left if vice versa
         drive(leftPin8, leftPin9, true);
         delay(2000);
+        stop();
     }
     servo.write(pos);
 }
@@ -268,6 +276,7 @@ void loop() {
             Serial.print("ALARM \n");
             break;
         case OBSTACLE_STATE:
+            
             dodge_obstacles();
             detect_off_signal();
             MACHINE_STATE = ALARM_STATE;
