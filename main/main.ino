@@ -108,7 +108,7 @@ void check_time() {
     if (time - current_time <= 0 && time != 0) {
         MACHINE_STATE = ALARM_STATE;
         //Check if alarm is contiunos and add another interval accordingly
-        CONTINUOS ? time = 0 : time += wanted_time_interval;
+        CONTINUOS ? time = 0x7FFFFFFF : time += wanted_time_interval;
     }
 }
 
