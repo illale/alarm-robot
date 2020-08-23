@@ -1,6 +1,4 @@
 #include <Servo.h>
-#include <WiFi.h>
-
 
 /*
 IDLE_STATE: In this state, the arduino checks is the current running time higher than the wanted
@@ -54,9 +52,9 @@ bool IS_DRIVING = false;
 //If false, then there is no second alarm, and vice versa
 bool CONTINUOS = false;
 //Default value for time interval in milliseconds
-long time;
-long wanted_time_interval;
-long current_time;
+unsigned long time;
+unsigned long wanted_time_interval;
+unsigned long current_time;
 //setupping values for alarm and detecting off signal
 int readValue;
 int count = 0;
@@ -217,12 +215,16 @@ void dodge_obstacles() {
     if (distLeft <= distRight){
         //Turn to the right if obstacle at left
         drive(rightPin5, rightPin6, true);
+        //Uncomment the line below to enable reverse for antoher wheel
+        //drive(leftPin8, leftPin9, false);
         delay(2000);
         stop();
         
     } else {
         //And to left if vice versa
         drive(leftPin8, leftPin9, true);
+        //Uncomment the line below to enable reverse for antoher wheel
+        //drive(rightPin5, rightPin6, false);
         delay(2000);
         stop();
     }
