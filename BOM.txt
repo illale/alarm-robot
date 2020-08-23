@@ -1,0 +1,16 @@
+Bill of materials
+
+Part name			Quantity
+____________________________________________
+Jumper cable			32
+Arduino Uno R3			1
+Breadboard (5.5 cm x 17 cm)	1
+L293D H-bridge Motor Driver	1
+Servo motor			1
+DC motor 5V			2
+Battery				1
+Slideswitch			1
+Ultrasonic Distance Sensor	1
+Tilt Sensor			1
+Piezo				1
+10 kΩ Resistor		        1

@@ -7,6 +7,7 @@ IDLE_STATE: In this state, the arduino checks is the current running time higher
             interval
 ALARM_STATE: The robot alarms, tries to escape from the human
 OBSTACLE_STATE: The robot detects obstacle, evades it, and continues to sound the alarm
+SETTINGS_STATE: Check the settings from serial
 
 State changes:
 IDLE_STATE -> ALARM_STATE, when the running time is higher than the interval
@@ -14,6 +15,7 @@ ALARM_STATE -> OBSTACLE_STATE, when the robot notices obstacle in its way
 ALARM_STATE -> IDLE_STATE, when the robot is shaken by human, this results in the alarm stopping
 OBSTACLE_STATE -> ALARM_STATE, when the obstacle has been avoided
 OBSTACLE_STATE -> IDLE_STATE, when the robot is shaken by human, this results in the alarm stopping
+SETTINGS_STATE -> IDLE_STATE, when duration from latest reset is over 30 seconds
 */
 enum STATE { IDLE_STATE, ALARM_STATE, OBSTACLE_STATE, SETTINGS_STATE};
 
@@ -55,6 +57,10 @@ bool CONTINUOS = false;
 long time;
 long wanted_time_interval;
 long current_time;
+//setupping values for alarm and detecting off signal
+int readValue;
+int count = 0;
+int previous;
 
 
 void get_settings() {
@@ -87,7 +93,7 @@ void get_settings() {
             CONTINUOS = true;
         }
     } else {
-        time = 50;  
+        time = 5000;  
       }
     //Store the wanted time inteval, so that time is never doubled
     wanted_time_interval = time;
@@ -102,7 +108,7 @@ void check_time() {
     if (time - current_time <= 0 && time != 0) {
         MACHINE_STATE = ALARM_STATE;
         //Check if alarm is contiunos and add another interval accordingly
-        CONTINUOS ? time = 0 : time += wanted_time_interval;
+        CONTINUOS ? time = 0x7FFFFFFF : time += wanted_time_interval;
     }
 }
 
@@ -169,12 +175,20 @@ long getDistance() {
 
 void check_obstacles() {
     //Check if there are any obstacles infront of the robot and change state accordingly
-    int upper_bound, lower_bound;
+    long upper_bound, lower_bound;
     upper_bound = 10;
     lower_bound = 0;
     long value = getDistance();
+    Serial.print("Distance: ");
+    Serial.print(value);
+    Serial.print("\n");
     if (lower_bound <= value && value <= upper_bound) {
+        Serial.print("State change \n");
+        stop();
         MACHINE_STATE = OBSTACLE_STATE;
+    } else {
+        Serial.print("No change \n");
+        MACHINE_STATE = ALARM_STATE;
     }
 }
 
@@ -190,9 +204,15 @@ void dodge_obstacles() {
     servo.write(140);
     delay(1000);
     long distLeft = getDistance();
+    Serial.print("Left distance: ");
+    Serial.print(distLeft);
+    Serial.print("\n");
     servo.write(40);
     delay(1000);
     long distRight = getDistance();
+    Serial.print("Right distance: ");
+    Serial.print(distRight);
+    Serial.print("\n");
 
     if (distLeft <= distRight){
         //Turn to the right if obstacle at left
@@ -204,12 +224,31 @@ void dodge_obstacles() {
         //And to left if vice versa
         drive(leftPin8, leftPin9, true);
         delay(2000);
+        stop();
     }
     servo.write(pos);
 }
 
+void alarm(int i) {
+    if (i < 6) {
+        tone(audPin, 100, 200);
+        delay(10);
+        tone(audPin, 300, 400);
+        delay(200);
+        tone(audPin, 50, 300);
+        delay(150);
+    } else {
+        MACHINE_STATE = IDLE_STATE;
+    }
+}
+
 void detect_off_signal() {
-    //Tarkistetaan heilutetaanko konetta
+    alarm(count);
+    previous = readValue;
+    readValue = digitalRead(tiltPin);
+    if (readValue != previous) {
+        count++;
+    }
 }
 
 void setup() {
@@ -218,7 +257,6 @@ void setup() {
     pinMode(echoPin, INPUT);
     pinMode(trigPin, OUTPUT);
     pinMode(tiltPin, INPUT);
-    pinMode(ledPin, OUTPUT);
     pinMode(audPin, OUTPUT);
     initMotor(leftPinActivate, leftPin8, leftPin9);
     initMotor(rightPinActivate, rightPin5, rightPin6);
@@ -229,19 +267,28 @@ void loop() {
     switch (MACHINE_STATE) {
         case IDLE_STATE:
             check_time();
+            Serial.print("IDLE \n");
+            break;
         case ALARM_STATE:
             move_machine();
             check_obstacles();
             detect_off_signal();
+            Serial.print("ALARM \n");
+            break;
         case OBSTACLE_STATE:
+            
             dodge_obstacles();
             detect_off_signal();
             MACHINE_STATE = ALARM_STATE;
+            Serial.print("OBSTACLE \n");
+            break;
         case SETTINGS_STATE:
             while ( millis() < 3000) {
                 //Check the setting in the first 30 seconds
                 get_settings();
+                Serial.print("SETTINGS \n");
             }
             MACHINE_STATE = IDLE_STATE;
+            break;
     }
 }           
