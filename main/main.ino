@@ -93,7 +93,7 @@ void get_settings() {
             CONTINUOS = true;
         }
     } else {
-        time = 50000;  
+        time = 5000;  
       }
     //Store the wanted time inteval, so that time is never doubled
     wanted_time_interval = time;
