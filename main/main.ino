@@ -93,7 +93,7 @@ void get_settings() {
             CONTINUOS = true;
         }
     } else {
-        time = 50;  
+        time = 5000;  
       }
     //Store the wanted time inteval, so that time is never doubled
     wanted_time_interval = time;
@@ -175,12 +175,19 @@ long getDistance() {
 
 void check_obstacles() {
     //Check if there are any obstacles infront of the robot and change state accordingly
-    int upper_bound, lower_bound;
+    long upper_bound, lower_bound;
     upper_bound = 10;
     lower_bound = 0;
     long value = getDistance();
+    Serial.print("Distance: ");
+    Serial.print(value);
+    Serial.print("\n");
     if (lower_bound <= value && value <= upper_bound) {
+        Serial.print("State change \n");
         MACHINE_STATE = OBSTACLE_STATE;
+    } else {
+        Serial.print("No change \n");
+        MACHINE_STATE = ALARM_STATE;
     }
 }
 
@@ -223,9 +230,6 @@ void alarm(int i) {
         tone(audPin, 50, 300);
         delay(150);
         }
-    else {
-        MACHINE_STATE = IDLE_STATE;
-    }
 }
 
 void detect_off_signal() {
@@ -243,7 +247,6 @@ void setup() {
     pinMode(echoPin, INPUT);
     pinMode(trigPin, OUTPUT);
     pinMode(tiltPin, INPUT);
-    pinMode(ledPin, OUTPUT);
     pinMode(audPin, OUTPUT);
     initMotor(leftPinActivate, leftPin8, leftPin9);
     initMotor(rightPinActivate, rightPin5, rightPin6);
@@ -254,19 +257,27 @@ void loop() {
     switch (MACHINE_STATE) {
         case IDLE_STATE:
             check_time();
+            Serial.print("IDLE \n");
+            break;
         case ALARM_STATE:
             move_machine();
             check_obstacles();
             detect_off_signal();
+            Serial.print("ALARM \n");
+            break;
         case OBSTACLE_STATE:
             dodge_obstacles();
             detect_off_signal();
             MACHINE_STATE = ALARM_STATE;
+            Serial.print("OBSTACLE \n");
+            break;
         case SETTINGS_STATE:
             while ( millis() < 3000) {
                 //Check the setting in the first 30 seconds
                 get_settings();
+                Serial.print("SETTINGS \n");
             }
             MACHINE_STATE = IDLE_STATE;
+            break;
     }
 }           
